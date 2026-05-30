@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-card auth-card-wide">
+  <div class="auth-logo">
+    <i class="bi bi-person-plus-fill"></i>
+  </div>
+  <h2 class="auth-title">Student Registration</h2>
+  <p class="auth-subtitle">Create your student account to get started</p>
+
+  <form method="POST" action="{{ url_for('register') }}" novalidate>
+    {{ form.hidden_tag() }}
+
+    <!-- Account Info -->
+    <div class="form-section-label">Account Information</div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Choose a username") }}
+        {% for e in form.username.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="your@email.com") }}
+        {% for e in form.email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Min 6 characters") }}
+        {% for e in form.password.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.confirm_password.label(class="form-label") }}
+        {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), placeholder="Repeat password") }}
+        {% for e in form.confirm_password.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+    </div>
+
+    <!-- Student Info -->
+    <div class="form-section-label">Student Information</div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        {{ form.student_number.label(class="form-label") }}
+        {{ form.student_number(class="form-control" + (" is-invalid" if form.student_number.errors else ""), placeholder="e.g. 2024-0001") }}
+        {% for e in form.student_number.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else ""), placeholder="First name") }}
+        {% for e in form.first_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else ""), placeholder="Last name") }}
+        {% for e in form.last_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.course.label(class="form-label") }}
+        {{ form.course(class="form-select" + (" is-invalid" if form.course.errors else "")) }}
+        {% for e in form.course.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.year_level.label(class="form-label") }}
+        {{ form.year_level(class="form-select" + (" is-invalid" if form.year_level.errors else "")) }}
+        {% for e in form.year_level.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.contact_number.label(class="form-label") }}
+        {{ form.contact_number(class="form-control", placeholder="e.g. 09XX-XXX-XXXX") }}
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary-custom w-100 mt-2">
+      <i class="bi bi-person-check-fill me-1"></i> Create Account
+    </button>
+  </form>
+
+  <p class="auth-footer">
+    Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+  </p>
+</div>
+{% endblock %}

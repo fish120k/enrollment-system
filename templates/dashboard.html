@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+{% if current_user.is_admin() %}
+<!-- ── Admin Dashboard ── -->
+<div class="row g-4 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-primary-light">
+        <i class="bi bi-people-fill text-primary"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ total_students }}</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-success-light">
+        <i class="bi bi-person-check-fill text-success"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ total_students }}</div>
+        <div class="stat-label">Enrolled</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-warning-light">
+        <i class="bi bi-calendar-event-fill text-warning"></i>
+      </div>
+      <div>
+        <div class="stat-value">S.Y. 2024</div>
+        <div class="stat-label">Academic Year</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon bg-info-light">
+        <i class="bi bi-graph-up-arrow text-info"></i>
+      </div>
+      <div>
+        <div class="stat-value">Active</div>
+        <div class="stat-label">System Status</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-card">
+  <div class="content-card-header">
+    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recently Added Students</h5>
+    <a href="{{ url_for('students') }}" class="btn btn-sm btn-outline-primary">View All</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Student No.</th>
+          <th>Full Name</th>
+          <th>Course</th>
+          <th>Year</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in recent_students %}
+        <tr>
+          <td><span class="badge bg-light text-dark">{{ s.student_number }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="mini-avatar">{{ s.first_name[0]|upper }}</div>
+              {{ s.full_name }}
+            </div>
+          </td>
+          <td>{{ s.course }}</td>
+          <td>Year {{ s.year_level }}</td>
+          <td>
+            <a href="{{ url_for('edit_student', student_id=s.id) }}" class="btn btn-xs btn-outline-secondary">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No students yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% else %}
+<!-- ── Student Dashboard ── -->
+{% if student %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="profile-hero-card">
+      <div class="profile-avatar-lg">{{ student.first_name[0]|upper }}</div>
+      <h4 class="mt-3 mb-1">{{ student.full_name }}</h4>
+      <p class="text-muted mb-0">{{ student.course }}</p>
+      <span class="badge bg-primary mt-2">Year {{ student.year_level }}</span>
+      <div class="mt-3">
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary-custom btn-sm">
+          <i class="bi bi-pencil-fill me-1"></i> Edit Profile
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="content-card h-100">
+      <div class="content-card-header">
+        <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>My Information</h5>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-hash"></i> Student No.</span>
+          <span class="info-value">{{ student.student_number }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-person"></i> Full Name</span>
+          <span class="info-value">{{ student.full_name }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+          <span class="info-value">{{ current_user.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-book"></i> Course</span>
+          <span class="info-value">{{ student.course }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-calendar3"></i> Year Level</span>
+          <span class="info-value">{{ student.year_level }}{% if student.year_level == 1 %}st{% elif student.year_level == 2 %}nd{% elif student.year_level == 3 %}rd{% else %}th{% endif %} Year</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label"><i class="bi bi-telephone"></i> Contact</span>
+          <span class="info-value">{{ student.contact_number or '—' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-warning">Student profile not found. Please contact the administrator.</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}
