@@ -13,10 +13,11 @@ app = Flask(__name__)
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL',
-    'mysql+pymysql://root@localhost/enrollment_db'
-)
+_db_url = os.getenv('DATABASE_URL', 'sqlite:///enrollment.db')
+# Render provides postgres:// URLs; SQLAlchemy requires postgresql://
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ── Extensions ─────────────────────────────────────────────────────────────────
@@ -287,8 +288,7 @@ def edit_profile():
 
 
 # ── DB init helper ─────────────────────────────────────────────────────────────
-@app.cli.command('init-db')
-def init_db():
+def _init_db():
     """Create all tables and seed an admin account."""
     db.create_all()
     if not User.query.filter_by(role='admin').first():
@@ -300,6 +300,16 @@ def init_db():
     else:
         print('Tables already exist.')
 
+@app.cli.command('init-db')
+def init_db_command():
+    """CLI: flask init-db"""
+    _init_db()
+
+# Auto-initialise tables on every startup (safe to run multiple times)
+with app.app_context():
+    _init_db()
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
