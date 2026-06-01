@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     'DATABASE_URL',
-    'mysql+pymysql://root@localhost/enrollment_database'
+    'mysql+pymysql://root@localhost/enrollment_db'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -30,7 +30,7 @@ login_manager.login_message_category = 'warning'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 # ── Decorators ─────────────────────────────────────────────────────────────────
@@ -180,13 +180,19 @@ def add_student():
 @login_required
 @admin_required
 def edit_student(student_id):
-    student = Student.query.get_or_404(student_id)
-    form = StudentForm(obj=student)
+    student = db.get_or_404(Student, student_id)
+    form = StudentForm()
 
     if request.method == 'GET':
-        # Pre-populate user fields
+        # Pre-populate all fields manually to avoid obj= mapping wrong model
         form.username.data = student.user.username
         form.email.data = student.user.email
+        form.student_number.data = student.student_number
+        form.first_name.data = student.first_name
+        form.last_name.data = student.last_name
+        form.course.data = student.course
+        form.year_level.data = student.year_level
+        form.contact_number.data = student.contact_number
 
     if form.validate_on_submit():
         # Check username uniqueness (excluding current user)
@@ -227,7 +233,7 @@ def edit_student(student_id):
 @login_required
 @admin_required
 def delete_student(student_id):
-    student = Student.query.get_or_404(student_id)
+    student = db.get_or_404(Student, student_id)
     name = student.full_name
     user = student.user
     db.session.delete(user)   # cascade deletes student

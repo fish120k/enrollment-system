@@ -51,7 +51,7 @@ class StudentForm(FlaskForm):
     """Used by admin to add/edit student records."""
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=80)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[Length(min=6)])
+    password = PasswordField('Password', validators=[Optional(), Length(min=6)])
     student_number = StringField('Student Number', validators=[DataRequired(), Length(max=20)])
     first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
