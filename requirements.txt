@@ -5,6 +5,7 @@ Flask-WTF
 WTForms
 email-validator
 bcrypt
+flask-bcrypt
 gunicorn
 python-dotenv
 psycopg2-binary
